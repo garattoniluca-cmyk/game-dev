@@ -5,11 +5,10 @@ class GameMap {
     this.height = 0;
   }
 
-  async load(url) {
-    const response = await fetch(url);
-    this.data = await response.json();
-    this.width = this.data.width;
-    this.height = this.data.height;
+  setData(data) {
+    this.data = data;
+    this.width = data.width;
+    this.height = data.height;
   }
 
   getTile(x, y) {
@@ -17,7 +16,7 @@ class GameMap {
     const tileY = Math.floor(y);
     
     if (tileX < 0 || tileX >= this.width || tileY < 0 || tileY >= this.height) {
-      return 1; // muro se fuori mappa
+      return 1;
     }
     
     return this.data.tiles[tileY][tileX];
