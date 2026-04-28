@@ -12,13 +12,11 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
-  font-family: monospace;
   touch-action: none;
 }
 
 #gameCanvas {
-  display: block;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -30,51 +28,69 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  pointer-events: none;
   z-index: 10;
-  padding: 20px;
+  pointer-events: none;
 }
 
 #dpad {
-  position: absolute;
-  bottom: 30px;
-  left: 30px;
-  width: 180px;
-  height: 180px;
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  width: 160px;
+  height: 160px;
   pointer-events: all;
 }
 
-.dpad-btn {
+#btnUp {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  top: 0px;
+  left: 55px;
+  width: 55px;
+  height: 55px;
+}
+
+#btnDown {
+  position: absolute;
+  bottom: 0px;
+  left: 55px;
+  width: 55px;
+  height: 55px;
+}
+
+#btnLeft {
+  position: absolute;
+  top: 55px;
+  left: 0px;
+  width: 55px;
+  height: 55px;
+}
+
+#btnRight {
+  position: absolute;
+  top: 55px;
+  right: 0px;
+  width: 55px;
+  height: 55px;
+}
+
+.dpad-btn {
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.5);
   color: #fff;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
+  font-size: 24px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  cursor: pointer;
   touch-action: manipulation;
-  transition: background 0.1s;
 }
 
 .dpad-btn:active {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255,255,255,0.5);
 }
 
-#btnUp { top: 0; left: 60px; }
-#btnDown { bottom: 0; left: 60px; }
-#btnLeft { top: 60px; left: 0; }
-#btnRight { top: 60px; right: 0; }
-
 #strafeButtons {
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -82,18 +98,18 @@ html, body {
 }
 
 .strafe-btn {
-  width: 80px;
-  height: 60px;
-  background: rgba(100, 100, 200, 0.3);
-  border: 2px solid rgba(150, 150, 250, 0.6);
+  width: 90px;
+  height: 55px;
+  background: rgba(100,100,200,0.3);
+  border: 2px solid rgba(150,150,250,0.6);
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
-  cursor: pointer;
   border-radius: 8px;
+  cursor: pointer;
   touch-action: manipulation;
 }
 
 .strafe-btn:active {
-  background: rgba(150, 150, 250, 0.6);
+  background: rgba(150,150,250,0.6);
 }

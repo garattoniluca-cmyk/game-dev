@@ -20,7 +20,7 @@ const LEVEL = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
   ],
   
-  playerStart: { x: 1.5, y: 1.5, angle: 0.5 },
+  playerStart: { x: 7.5, y: 13.5, angle: -1.5 },
   
   wallColors: {
     1: [120, 120, 120],
