@@ -1,11 +1,17 @@
 const CONFIG = {
-    gameTitle: 'Game Studio',
-    version: '1.0.0',
-    author: 'Luca Dev',
-    fps: 60,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    debug: true
+  CANVAS_WIDTH: 800,
+  CANVAS_HEIGHT: 600,
+  FOV: Math.PI / 3,
+  MAX_DEPTH: 20,
+  WALL_HEIGHT: 100,
+  
+  PLAYER_SPEED: 0.05,
+  PLAYER_ROTATE_SPEED: 0.05,
+  
+  COLORS: {
+    1: '#888888',  // muro grigio
+    2: '#FF0000',  // muro rosso
+    3: '#00FF00',  // muro verde
+    4: '#0000FF'   // muro blu
+  }
 };
-
-console.log(`${CONFIG.gameTitle} v${CONFIG.version}`);
