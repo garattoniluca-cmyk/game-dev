@@ -2,237 +2,143 @@ class Game {
   constructor() {
     this.canvas = document.getElementById('gameCanvas');
     this.ctx = this.canvas.getContext('2d');
-    this.resize();
-    
-    this.player = {
-      x: LEVEL.playerStart.x,
-      y: LEVEL.playerStart.y,
-      angle: LEVEL.playerStart.angle,
-      moveSpeed: 0.08,
-      rotSpeed: 0.05
-    };
-    
-    this.fov = Math.PI / 3;
-    this.numRays = 200;
-    this.maxDepth = 20;
-    
-    this.controls = {
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
-      strafeLeft: false,
-      strafeRight: false
-    };
-    
-    this.setupControls();
-    window.addEventListener('resize', () => this.resize());
-    
-    this.lastTime = 0;
-    requestAnimationFrame((t) => this.loop(t));
-  }
-  
-  resize() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
+    this.W = this.canvas.width;
+    this.H = this.canvas.height;
+
+    this.px = 8;
+    this.py = 8;
+    this.pa = 0;
+    this.fov = Math.PI / 3;
+    this.speed = 0.06;
+    this.rotSpeed = 0.04;
+
+    this.controls = { forward:false, backward:false, left:false, right:false };
+    this.setupControls();
+    requestAnimationFrame(() => this.loop());
   }
-  
+
   setupControls() {
-    // Keyboard
-    const keyMap = {
-      'ArrowUp': 'forward', 'w': 'forward',
-      'ArrowDown': 'backward', 's': 'backward',
-      'ArrowLeft': 'left', 'a': 'left',
-      'ArrowRight': 'right', 'd': 'right',
-      'q': 'strafeLeft', 'e': 'strafeRight'
+    const map = {
+      'ArrowUp':'forward','w':'forward',
+      'ArrowDown':'backward','s':'backward',
+      'ArrowLeft':'left','a':'left',
+      'ArrowRight':'right','d':'right'
     };
-    
-    window.addEventListener('keydown', (e) => {
-      if (keyMap[e.key]) this.controls[keyMap[e.key]] = true;
-    });
-    window.addEventListener('keyup', (e) => {
-      if (keyMap[e.key]) this.controls[keyMap[e.key]] = false;
-    });
-    
-    // Touch buttons
-    const setupBtn = (id, control) => {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      const start = (e) => { e.preventDefault(); this.controls[control] = true; };
-      const end = (e) => { e.preventDefault(); this.controls[control] = false; };
-      btn.addEventListener('touchstart', start);
-      btn.addEventListener('touchend', end);
-      btn.addEventListener('mousedown', start);
-      btn.addEventListener('mouseup', end);
-      btn.addEventListener('mouseleave', end);
+    window.addEventListener('keydown', e => { if(map[e.key]) this.controls[map[e.key]]=true; });
+    window.addEventListener('keyup', e => { if(map[e.key]) this.controls[map[e.key]]=false; });
+
+    const btn = (id, ctrl) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('touchstart', e => { e.preventDefault(); this.controls[ctrl]=true; }, {passive:false});
+      el.addEventListener('touchend', e => { e.preventDefault(); this.controls[ctrl]=false; }, {passive:false});
+      el.addEventListener('mousedown', () => this.controls[ctrl]=true);
+      el.addEventListener('mouseup', () => this.controls[ctrl]=false);
     };
-    
-    setupBtn('btnUp', 'forward');
-    setupBtn('btnDown', 'backward');
-    setupBtn('btnLeft', 'left');
-    setupBtn('btnRight', 'right');
-    setupBtn('btnStrafeL', 'strafeLeft');
-    setupBtn('btnStrafeR', 'strafeRight');
+    btn('btnUp','forward');
+    btn('btnDown','backward');
+    btn('btnLeft','left');
+    btn('btnRight','right');
+    btn('btnStrafeL','strafeLeft');
+    btn('btnStrafeR','strafeRight');
   }
-  
-  getMapAt(x, y) {
-    const mx = Math.floor(x);
-    const my = Math.floor(y);
-    if (mx < 0 || mx >= LEVEL.width || my < 0 || my >= LEVEL.height) return 1;
-    return LEVEL.map[my * LEVEL.width + mx];
+
+  tile(x, y) {
+    const tx = Math.floor(x);
+    const ty = Math.floor(y);
+    if(tx<0||ty<0||tx>=LEVEL.width||ty>=LEVEL.height) return 1;
+    return LEVEL.map[ty * LEVEL.width + tx];
   }
-  
+
   update() {
-    const p = this.player;
-    
-    if (this.controls.left) p.angle -= p.rotSpeed;
-    if (this.controls.right) p.angle += p.rotSpeed;
-    
-    let dx = 0, dy = 0;
-    
-    if (this.controls.forward) {
-      dx += Math.cos(p.angle) * p.moveSpeed;
-      dy += Math.sin(p.angle) * p.moveSpeed;
-    }
-    if (this.controls.backward) {
-      dx -= Math.cos(p.angle) * p.moveSpeed;
-      dy -= Math.sin(p.angle) * p.moveSpeed;
-    }
-    if (this.controls.strafeLeft) {
-      dx += Math.cos(p.angle - Math.PI/2) * p.moveSpeed;
-      dy += Math.sin(p.angle - Math.PI/2) * p.moveSpeed;
-    }
-    if (this.controls.strafeRight) {
-      dx += Math.cos(p.angle + Math.PI/2) * p.moveSpeed;
-      dy += Math.sin(p.angle + Math.PI/2) * p.moveSpeed;
-    }
-    
-    // Collision detection con margine
-    const margin = 0.2;
-    if (this.getMapAt(p.x + dx + Math.sign(dx) * margin, p.y) === 0) p.x += dx;
-    if (this.getMapAt(p.x, p.y + dy + Math.sign(dy) * margin) === 0) p.y += dy;
+    if(this.controls.left) this.pa -= this.rotSpeed;
+    if(this.controls.right) this.pa += this.rotSpeed;
+
+    let dx=0, dy=0;
+    if(this.controls.forward) { dx+=Math.cos(this.pa)*this.speed; dy+=Math.sin(this.pa)*this.speed; }
+    if(this.controls.backward) { dx-=Math.cos(this.pa)*this.speed; dy-=Math.sin(this.pa)*this.speed; }
+
+    if(this.tile(this.px+dx, this.py)===0) this.px+=dx;
+    if(this.tile(this.px, this.py+dy)===0) this.py+=dy;
   }
-  
-  castRay(angle) {
-    const p = this.player;
-    const sin = Math.sin(angle);
-    const cos = Math.cos(angle);
-    
-    let distance = 0;
-    const step = 0.02;
-    let hit = 0;
-    
-    while (distance < this.maxDepth) {
-      distance += step;
-      const x = p.x + cos * distance;
-      const y = p.y + sin * distance;
-      
-      const tile = this.getMapAt(x, y);
-      if (tile > 0) {
-        hit = tile;
-        break;
-      }
+
+  cast(angle) {
+    let d=0;
+    const step=0.02;
+    while(d<20) {
+      d+=step;
+      const tx=this.px+Math.cos(angle)*d;
+      const ty=this.py+Math.sin(angle)*d;
+      const t=this.tile(tx,ty);
+      if(t>0) return {d, t};
     }
-    
-    return { distance, hit };
+    return {d:20, t:0};
   }
-  
+
   render() {
+    const ctx=this.ctx;
+    const W=this.W, H=this.H;
+
     // Sky
-    this.ctx.fillStyle = '#1a1a2e';
-    this.ctx.fillRect(0, 0, this.width, this.height / 2);
-    
+    ctx.fillStyle='#222244';
+    ctx.fillRect(0,0,W,H/2);
+
     // Floor
-    this.ctx.fillStyle = '#3a2a1a';
-    this.ctx.fillRect(0, this.height / 2, this.width, this.height / 2);
-    
-    // Raycasting
-    const rayWidth = this.width / this.numRays;
-    const halfFov = this.fov / 2;
-    
-    for (let i = 0; i < this.numRays; i++) {
-      const rayAngle = this.player.angle - halfFov + (i / this.numRays) * this.fov;
-      const { distance, hit } = this.castRay(rayAngle);
-      
-      // Fix fisheye
-      const correctedDist = distance * Math.cos(rayAngle - this.player.angle);
-      
-      // Wall height
-      const wallHeight = Math.min(this.height, (this.height / correctedDist) * 0.8);
-      const wallTop = (this.height - wallHeight) / 2;
-      
-      // Wall color con shading distanza
-      const baseColor = LEVEL.wallColors[hit] || [200, 200, 200];
-      const brightness = Math.max(0.3, 1 - correctedDist / this.maxDepth);
-      const r = Math.floor(baseColor[0] * brightness);
-      const g = Math.floor(baseColor[1] * brightness);
-      const b = Math.floor(baseColor[2] * brightness);
-      
-      this.ctx.fillStyle = `rgb(${r},${g},${b})`;
-      this.ctx.fillRect(i * rayWidth, wallTop, rayWidth + 1, wallHeight);
-    }
-    
-    // Mini-map
-    this.renderMinimap();
-    
+    ctx.fillStyle='#442211';
+    ctx.fillRect(0,H/2,W,H/2);
+
     // Crosshair
-    this.ctx.strokeStyle = '#fff';
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.width/2 - 10, this.height/2);
-    this.ctx.lineTo(this.width/2 + 10, this.height/2);
-    this.ctx.moveTo(this.width/2, this.height/2 - 10);
-    this.ctx.lineTo(this.width/2, this.height/2 + 10);
-    this.ctx.stroke();
-  }
-  
-  renderMinimap() {
-    const size = 150;
-    const tileSize = size / LEVEL.width;
-    const x0 = 10;
-    const y0 = 10;
-    
-    this.ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    this.ctx.fillRect(x0 - 2, y0 - 2, size + 4, size + 4);
-    
-    for (let y = 0; y < LEVEL.height; y++) {
-      for (let x = 0; x < LEVEL.width; x++) {
-        const tile = LEVEL.map[y * LEVEL.width + x];
-        if (tile > 0) {
-          const c = LEVEL.wallColors[tile];
-          this.ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
-          this.ctx.fillRect(x0 + x * tileSize, y0 + y * tileSize, tileSize, tileSize);
+    ctx.strokeStyle='rgba(255,255,255,0.8)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(W/2-12,H/2); ctx.lineTo(W/2+12,H/2);
+    ctx.moveTo(W/2,H/2-12); ctx.lineTo(W/2,H/2+12);
+    ctx.stroke();
+
+    // Rays
+    const nRays=W;
+    const halfFov=this.fov/2;
+    for(let i=0;i<nRays;i++) {
+      const angle=this.pa - halfFov + (i/nRays)*this.fov;
+      const {d,t}=this.cast(angle);
+      const corr=d*Math.cos(angle-this.pa);
+      const wh=Math.min(H,(H/corr)*0.9);
+      const wt=(H-wh)/2;
+      const bright=Math.max(0.2, 1-d/20);
+      const c=LEVEL.wallColors[t]||[200,200,200];
+      ctx.fillStyle=`rgb(${Math.floor(c[0]*bright)},${Math.floor(c[1]*bright)},${Math.floor(c[2]*bright)})`;
+      ctx.fillRect(i,wt,1,wh);
+    }
+
+    // Minimap
+    const ms=120;
+    const ts=ms/LEVEL.width;
+    const mx=10, my=10;
+    ctx.fillStyle='rgba(0,0,0,0.7)';
+    ctx.fillRect(mx,my,ms,ms);
+    for(let y=0;y<LEVEL.height;y++) {
+      for(let x=0;x<LEVEL.width;x++) {
+        const t=LEVEL.map[y*LEVEL.width+x];
+        if(t>0) {
+          const c=LEVEL.wallColors[t]||[200,200,200];
+          ctx.fillStyle=`rgb(${c[0]},${c[1]},${c[2]})`;
+          ctx.fillRect(mx+x*ts,my+y*ts,ts,ts);
         }
       }
     }
-    
-    // Player
-    this.ctx.fillStyle = '#fff';
-    this.ctx.beginPath();
-    this.ctx.arc(x0 + this.player.x * tileSize, y0 + this.player.y * tileSize, 3, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    // Direction
-    this.ctx.strokeStyle = '#0f0';
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.moveTo(x0 + this.player.x * tileSize, y0 + this.player.y * tileSize);
-    this.ctx.lineTo(
-      x0 + (this.player.x + Math.cos(this.player.angle) * 0.5) * tileSize,
-      y0 + (this.player.y + Math.sin(this.player.angle) * 0.5) * tileSize
-    );
-    this.ctx.stroke();
+    ctx.fillStyle='#fff';
+    ctx.beginPath();
+    ctx.arc(mx+this.px*ts,my+this.py*ts,3,0,Math.PI*2);
+    ctx.fill();
   }
-  
-  loop(time) {
+
+  loop() {
     this.update();
     this.render();
-    requestAnimationFrame((t) => this.loop(t));
+    requestAnimationFrame(()=>this.loop());
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  new Game();
-});
+window.addEventListener('DOMContentLoaded',()=>new Game());
