@@ -15,7 +15,7 @@ async function init() {
   renderer = new Renderer(canvas);
   
   gameMap = new GameMap();
-  await gameMap.load('/data/level.json');
+  await gameMap.load('data/level.json');
   
   player = new Player(5, 5, 0);
   
