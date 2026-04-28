@@ -41,9 +41,12 @@ class Game {
       el.addEventListener('mousedown', () => this.ctrl[k]=true);
       el.addEventListener('mouseup', () => this.ctrl[k]=false);
     };
-    btn('btnUp','f'); btn('btnDown','b');
-    btn('btnLeft','l'); btn('btnRight','r');
-    btn('btnSL','sl'); btn('btnSR','sr');
+    btn('btnUp','f');
+    btn('btnDown','b');
+    btn('btnLeft','l');
+    btn('btnRight','r');
+    btn('btnStrafeL','sl');
+    btn('btnStrafeR','sr');
   }
 
   tile(x, y) {
