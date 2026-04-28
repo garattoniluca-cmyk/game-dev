@@ -32,8 +32,4 @@ class Player {
       this.y = newY;
     }
   }
-
-  getPosition() {
-    return { x: this.x, y: this.y, angle: this.angle };
-  }
 }
