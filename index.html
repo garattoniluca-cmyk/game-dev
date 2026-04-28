@@ -2,35 +2,30 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doom-like Raycaster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doom 3D Mobile</title>
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="hud">
+        <!-- D-pad sinistra: movimento + rotazione -->
+        <div id="dpad">
+            <button id="btnUp" class="dpad-btn">▲</button>
+            <button id="btnDown" class="dpad-btn">▼</button>
+            <button id="btnLeft" class="dpad-btn">◄</button>
+            <button id="btnRight" class="dpad-btn">►</button>
+        </div>
         
-        <!-- HUD Touch Controls -->
-        <div id="hud">
-            <!-- D-Pad Left -->
-            <div id="dpad">
-                <button id="btnUp" class="dpad-btn dpad-up">▲</button>
-                <button id="btnLeft" class="dpad-btn dpad-left">◄</button>
-                <button id="btnDown" class="dpad-btn dpad-down">▼</button>
-                <button id="btnRight" class="dpad-btn dpad-right">►</button>
-            </div>
-            
-            <!-- Action Buttons Right -->
-            <div id="actionButtons">
-                <button id="btnShoot" class="action-btn shoot-btn">SHOOT</button>
-            </div>
+        <!-- Strafe destra -->
+        <div id="strafeButtons">
+            <button id="btnStrafeL" class="strafe-btn">◀ STRAFE</button>
+            <button id="btnStrafeR" class="strafe-btn">STRAFE ▶</button>
         </div>
     </div>
 
-    <script src="src/config.js"></script>
-    <script src="src/map.js"></script>
-    <script src="src/player.js"></script>
-    <script src="src/renderer.js"></script>
-    <script src="src/main.js"></script>
+    <script src="src/level.js"></script>
+    <script src="src/game.js"></script>
 </body>
 </html>

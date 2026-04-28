@@ -2,100 +2,98 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-}
-
-#gameContainer {
-  position: relative;
-  width: 800px;
-  height: 600px;
-  background: #000;
-  border: 2px solid #fff;
-}
-
-canvas {
-  display: block;
+html, body {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: monospace;
+  touch-action: none;
+}
+
+#gameCanvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 #hud {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 20px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   pointer-events: none;
+  z-index: 10;
+  padding: 20px;
 }
 
 #dpad {
-  display: grid;
-  grid-template-areas: ". up ." "left . right" ". down .";
-  gap: 5px;
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 180px;
+  height: 180px;
   pointer-events: all;
 }
 
 .dpad-btn {
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.3);
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   color: #fff;
-  border: 2px solid #fff;
-  font-size: 20px;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   touch-action: manipulation;
+  transition: background 0.1s;
 }
-
-.dpad-up { grid-area: up; }
-.dpad-left { grid-area: left; }
-.dpad-right { grid-area: right; }
-.dpad-down { grid-area: down; }
 
 .dpad-btn:active {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.5);
 }
 
-#actionButtons {
+#btnUp { top: 0; left: 60px; }
+#btnDown { bottom: 0; left: 60px; }
+#btnLeft { top: 60px; left: 0; }
+#btnRight { top: 60px; right: 0; }
+
+#strafeButtons {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
   pointer-events: all;
 }
 
-.action-btn {
-  width: 70px;
-  height: 50px;
-  background: #ff0000;
+.strafe-btn {
+  width: 80px;
+  height: 60px;
+  background: rgba(100, 100, 200, 0.3);
+  border: 2px solid rgba(150, 150, 250, 0.6);
   color: #fff;
-  border: 2px solid #fff;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
+  border-radius: 8px;
   touch-action: manipulation;
 }
 
-.action-btn:active {
-  background: #cc0000;
-}
-
-@media (max-width: 900px) {
-  #gameContainer {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-  }
-  
-  canvas {
-    width: 100vw;
-    height: 100vh;
-  }
+.strafe-btn:active {
+  background: rgba(150, 150, 250, 0.6);
 }
